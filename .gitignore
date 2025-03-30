@@ -1,0 +1,44 @@
+# Ignorer les paramètres de Visual Studio Code
+.vscode/
+
+# Ignorer les artefacts de compilation
+*.exe
+*.o
+*.obj
+*.so
+*.dll
+*.lib
+*.a
+*.out
+
+# Ignorer les fichiers de sauvegarde et temporaires
+*.bak
+*.tmp
+*.swp
+*.swo
+*.~*
+
+# Ignorer les fichiers PL/SQL compilés
+*.plb
+*.pyo
+
+# Ignorer les journaux
+*.log
+
+# Ignorer les fichiers de dépendances
+*.d
+
+# Ignorer les fichiers spécifiques à l'utilisateur
+*.user
+*.suo
+
+# Ignorer les vidages mémoire
+core
+
+# Ignorer les sauvegardes de bases de données
+*.dmp
+*.sql~
+
+# Ignorer les fichiers spécifiques à d'autres IDE
+.idea/
+*.iml
