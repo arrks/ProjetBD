@@ -1,0 +1,76 @@
+Programme;Sigle;Titre;Credits;Sessions
+Baccalaureat en informatique appliquee;INFO1101;Principes de programmation I;3;A21,H22,A22,H23,A23,H24,A24,H25
+Baccalaureat en informatique appliquee;INFO1102;Principes de programmation II;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;INFO2001;Introduction a l'architecture d'ordinateur;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;INFO3103;Organisation des ordinateurs;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;INFO3106;Introduction au developpement de logiciel;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;INFO2012;Structures de donnees et algorithmes;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;INFO3114;Fichiers et bases de donnees;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;INFO3202;Systeme d'exploitation;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;INFO3201;Architecture d'ordinateur;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;INFO3205;Paradigmes de programmation;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;INFO3212;Algorithmique;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;INFO3214;Informatique theorique;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;INFO3221;Introduction aux reseaux d'ordinateurs;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;INFO4002;Applications client-serveur;3;A22,A24
+Baccalaureat en informatique appliquee;INFO4004;Principes de simulations;3;A22,A24
+Baccalaureat en informatique appliquee;INFO4006;Multimedia;3;A22,A24
+Baccalaureat en informatique appliquee;INFO4023;Reseaux sans fil;3;H22,H24
+Baccalaureat en informatique appliquee;INFO4025;Architectures avancees d'ordinateur;3;H22,H24
+Baccalaureat en informatique appliquee;INFO4028;Analyse et traitement d'images;3;A21,A23
+Baccalaureat en informatique appliquee;INFO4030;Bases de donnees relationnelles et reparties;3;H23,H25
+Baccalaureat en informatique appliquee;INFO4035;Algorithmes systemes paralleles et distribues;3;H21,H23
+Baccalaureat en informatique appliquee;INFO4041;Analyse de performance, verification et validation;3;A21,A23
+Baccalaureat en informatique appliquee;INFO4042;Programmation Web;3;A21,A23
+Baccalaureat en informatique appliquee;INFO4063;Algorithmique numerique;3;A22
+Baccalaureat en informatique appliquee;INFO4108;Programmation Unix;3;H22,H24
+Baccalaureat en informatique appliquee;INFO4301;Apprentissage machine;3;A21,A23
+Baccalaureat en informatique appliquee;INFO4302;Algorithmes avances;3;H23,H25
+Baccalaureat en informatique appliquee;INFO4303;Programmation massivement parallele;3;H21,H23
+Baccalaureat en informatique appliquee;INFO4304;Vision par ordinateur;3;H21,H23
+Baccalaureat en informatique appliquee;INFO4305;Cryptographie;3;H23,H25
+Baccalaureat en informatique appliquee;MATH1073;Calcul differentiel;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;MATH1173;Calcul integral;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;MATH1563;Elements de mathematiques discretes;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;MATH2013;Suites, series, calcul dans Rn;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;MATH2613;Algebre matricielle;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;STAT2603;Introduction aux probabilites et a la statistique;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;STAT2633;Introduction a la statistique appliquee;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;PHYS1373;Electricite et magnetisme;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;PHYS2113;Principes de mecanique;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;ASTR1043;Astronomie generale;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;BICH2023;Elements de biochimie;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;BIOL1113;Biologie generale I;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;CHIM1013;Chimie generale I;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;ADSI3541;Intranet/extranet en gestion;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;ADSI3601;Analyse des systemes d'information;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;ADSI4531;Progiciels de gestion integree;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;ADSI4571;Gestion de projets de systemes d'information;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;ADSI4603;Projets en systemes d'information;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;ADSI4604;Gestion des systemes d'information;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;ADMK1310;Introduction au marketing;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;ADMN1220;Introduction au management;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;ADRH3222;Comportement organisationnel;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;ADCO1010;Comptabilite financiere I;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;GCIV2710;Geomatique;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;GELE2012;Circuits electriques;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;GELE2211;Electronique analogique;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;GELE3113;Systemes electroniques;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;GELE3131;Mesures et instrumentations;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;GELE3422;Microprocesseurs;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;GELE3541;Telecommunications;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;GELE5312;Reseaux intelligents;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;GELE5584;Communications numeriques;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;GMEC5531;Vibrations et bruit;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;FRAN1500;Communication orale;3;A21,H22,A22,H23,A23,H24,A24,H25
+Baccalaureat en informatique appliquee;FRAN1600;Communication ecrite;3;A21,H22,A22,H23,A23,H24,A24,H25
+Baccalaureat en informatique appliquee;ANGL1031;Language, writing and reading;3;A21,H22,A22,H23,A23,H24,A24,H25
+Baccalaureat en informatique appliquee;PHIL2210;Philosophie de la communication;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;PHIL2241;Introduction e l'esthetique;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;PHIL3492;Ethique et informatique;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;PSYC1000;Introduction a la psychologie;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;PSYC2810;Relations humaines;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;PSYC3510;Psychologie industrielle et organisationnelle;3;H22,H23,H24,H25
+Baccalaureat en informatique appliquee;SOCI1001;Introduction a la sociologie;3;A21,H22,A22,H23,A23,H24,A24,H25
+Baccalaureat en informatique appliquee;HIST1401;Le Canada des debuts a 1850;3;A21,A22,A23,A24
+Baccalaureat en informatique appliquee;GEOG1103;Le milieu humain;3;H22,H23,H24,H25
