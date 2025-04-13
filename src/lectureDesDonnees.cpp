@@ -7,7 +7,6 @@
 #include <stdexcept>
 #include <sstream>
 #include <string>
-#include <vector>
 #include <ocilib.h>
 using namespace std;
 
