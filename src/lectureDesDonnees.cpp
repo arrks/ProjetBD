@@ -1,6 +1,6 @@
 // Projet final - lecture des données et insnertion dans tables SQL
 // Samuel Doucette - A00216008
-// Alec Jones - A0021XXXX
+// Alec Jones - A00216262
 
 #include <iostream>
 #include <fstream>
@@ -67,66 +67,70 @@ void creerTables(OCI_Connection *conn){
     OCI_Statement *createSt = OCI_StatementCreate(conn);
 
     // Table Programmes
-    OCI_ExecuteStmt(createSt, "create table Programmes(ID numeric(3), Titre varchar2(128), Credits numeric(3), primary key(ID));");
+    OCI_ExecuteStmt(createSt, "create table Programmes(ID numeric(3), Titre varchar2(128), Credits numeric(3), primary key(ID))");
 
     // Table Repertoire
-    OCI_ExecuteStmt(createSt, "create table Repertoire(Sigle char(8), Titre varchar2(128), Credits numeric(2), primary key(Sigle));");
+    OCI_ExecuteStmt(createSt, "create table Repertoire(Sigle char(8), Titre varchar2(128), Credits numeric(2), primary key(Sigle))");
     
     // Table CoursExiges
-    OCI_ExecuteStmt(createSt, "create table CoursExiges(ID numeric(3), Sigle char(8), primary key(ID, Sigle), foreign key(ID) references Programmes(ID), foreign key(Sigle) references Repertoire(Sigle));");
+    OCI_ExecuteStmt(createSt, "create table CoursExiges(ID numeric(3), Sigle char(8), primary key(ID, Sigle), foreign key(ID) references Programmes(ID), foreign key(Sigle) references Repertoire(Sigle))");
 
     // Table Etudiants
-    OCI_ExecuteStmt(createSt, "create table Etudiants( NI char(9), Nom char(128), ID numeric(3), primary key(NI), foreign key(ID) references Programmes(ID));");
+    OCI_ExecuteStmt(createSt, "create table Etudiants(NI char(9), Nom char(128), ID numeric(3), primary key(NI), foreign key(ID) references Programmes(ID))");
 
     // Table CoursOfferts
-    OCI_ExecuteStmt(createSt, "create table CoursOfferts(Semestre char(3), Sigle char(8), primary key(Semestre, Sigle), foreign key(Sigle) references Repertoire(Sigle));");
+    OCI_ExecuteStmt(createSt, "create table CoursOfferts(Semestre char(3), Sigle char(8), primary key(Semestre, Sigle), foreign key(Sigle) references Repertoire(Sigle))");
 
     // Table Inscriptions
-    OCI_ExecuteStmt(createSt, "create table Inscriptions(NI char(9), Semestre char(3), Sigle char(8), primary key(NI, Semestre, Sigle), foreign key(NI) references Etudiants(NI), foreign key(Semestre, Sigle) references CoursOfferts(Semestre, Sigle));");
+    OCI_ExecuteStmt(createSt, "create table Inscriptions(NI char(9), Semestre char(3), Sigle char(8), primary key(NI, Semestre, Sigle), foreign key(NI) references Etudiants(NI), foreign key(Semestre, Sigle) references CoursOfferts(Semestre, Sigle))");
 
     // Table Evaluations
-    OCI_ExecuteStmt(createSt, "create table Evaluations(Sigle char(8), NomEval varchar2(128), Poids numeric(3), primary key(Sigle, NomEval), foreign key(Sigle) references Repertoire(Sigle));");
+    OCI_ExecuteStmt(createSt, "create table Evaluations(Sigle char(8), NomEval varchar2(128), Poids numeric(3), primary key(Sigle, NomEval), foreign key(Sigle) references Repertoire(Sigle))");
 
     // Table Notes
-    OCI_ExecuteStmt(createSt, "create table Notes(NI char(9), Semestre char(3), Sigle char(8), NomEval varchar2(128), Points numeric(3), primary key(NI, Semestre, Sigle, NomEval), foreign key(NI) references Etudiants(NI), foreign key(Semestre, Sigle) references CoursOfferts(Semestre, Sigle), foreign key(Sigle, NomEval) references Evaluations(Sigle, NomEval));");
+    OCI_ExecuteStmt(createSt, "create table Notes(NI char(9), Semestre char(3), Sigle char(8), NomEval varchar2(128), Points numeric(3), primary key(NI, Semestre, Sigle, NomEval), foreign key(NI) references Etudiants(NI), foreign key(Semestre, Sigle) references CoursOfferts(Semestre, Sigle), foreign key(Sigle, NomEval) references Evaluations(Sigle, NomEval))");
 
     // Table EchelleNotes
-    OCI_ExecuteStmt(createSt, "create table EchelleNotes(Points numeric(3), Lettre varchar2(2), Note numeric(3,2), primary key(Points));");
+    OCI_ExecuteStmt(createSt, "create table EchelleNotes(Points numeric(3), Lettre varchar2(2), Note numeric(3,2), primary key(Points))");
 
     OCI_StatementFree(createSt);
+
+    OCI_Commit(conn);
 }
 
 void effacerTables(OCI_Connection *conn){
     OCI_Statement *dropSt = OCI_StatementCreate(conn);
 
     // Table EchelleNotes
-    OCI_ExecuteStmt(dropSt, "drop table EchelleNotes cascade constraints;");
+    OCI_ExecuteStmt(dropSt, "drop table EchelleNotes cascade constraints");
 
     // Table Notes
-    OCI_ExecuteStmt(dropSt, "drop table Notes cascade constraints;");
+    OCI_ExecuteStmt(dropSt, "drop table Notes cascade constraints");
     
     // Table Evaluations
-    OCI_ExecuteStmt(dropSt, "drop table Evaluations cascade constraints;");
+    OCI_ExecuteStmt(dropSt, "drop table Evaluations cascade constraints");
 
     // Table Inscriptions
-    OCI_ExecuteStmt(dropSt, "drop table Inscriptions cascade constraints;");
+    OCI_ExecuteStmt(dropSt, "drop table Inscriptions cascade constraints");
 
     // Table CoursOfferts
-    OCI_ExecuteStmt(dropSt, "drop table CoursOfferts cascade constraints;");
+    OCI_ExecuteStmt(dropSt, "drop table CoursOfferts cascade constraints");
 
     // Table Etudiants
-    OCI_ExecuteStmt(dropSt, "drop table Etudiants cascade constraints;");
+    OCI_ExecuteStmt(dropSt, "drop table Etudiants cascade constraints");
 
     // Table CoursExiges
-    OCI_ExecuteStmt(dropSt, "drop table CoursExiges cascade constraints;");
+    OCI_ExecuteStmt(dropSt, "drop table CoursExiges cascade constraints");
 
     // Table Repertoire
-    OCI_ExecuteStmt(dropSt, "drop table Repertoire cascade constraints;");
+    OCI_ExecuteStmt(dropSt, "drop table Repertoire cascade constraints");
 
     // Table Programmes
-    OCI_ExecuteStmt(dropSt, "drop table Programmes cascade constraints;");
+    OCI_ExecuteStmt(dropSt, "drop table Programmes cascade constraints");
 
     OCI_StatementFree(dropSt);
+
+    OCI_Commit(conn);
 }
 
 void traiterFichierProgrammes(OCI_Connection *conn){
