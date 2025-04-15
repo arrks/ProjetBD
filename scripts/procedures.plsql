@@ -6,16 +6,27 @@
 -- Utilisation: EXECUTE liste_programmes;
 create or replace procedure liste_programmes is
    cursor c_programmes is
-   select ID
+   select ID,
+          TITRE,
+          CREDITS
      from programmes
-    order by ID;
-   v_ID programmes.ID%type;
+    order by TITRE;
+   v_ID      programmes.ID%type;
+   v_TITRE   programmes.TITRE%type;
+   v_CREDITS programmes.CREDITS%type;
 begin
    open c_programmes;
    loop
-      fetch c_programmes into v_ID;
+      fetch c_programmes into
+         v_ID,
+         v_TITRE,
+         v_CREDITS;
       exit when c_programmes%NOTFOUND;
-      DBMS_OUTPUT.PUT_LINE(v_ID);
+      DBMS_OUTPUT.PUT_LINE(v_ID
+                           || ' - '
+                           || v_TITRE
+                           || ' - '
+                           || v_CREDITS);
    end loop;
    close c_programmes;
 end liste_programmes;
