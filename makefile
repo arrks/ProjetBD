@@ -8,9 +8,7 @@ DB_CONN = localhost:1521/xe
 CXX = g++
 LIBS = -locilib
 
-.PHONY: all clean import run_lecture run_menu setup
-
-all: lecture 
+.PHONY: clean import run_lecture run_menu setup
 
 import:
 	sqlplus $(DB_USER)/$(DB_PASSWORD)@$(DB_CONN) @scripts/procedures.plsql
@@ -21,10 +19,10 @@ lecture: src/lectureDesDonnees.cpp
 menu: src/menu.cpp
 	$(CXX) -o menu.out src/menu.cpp $(LIBS)
 
-run_lecture: lecture
+run_lecture: lecture.out
 	@./lecture.out $(DB_USER) $(DB_PASSWORD)
 
-run_menu: menu
+run_menu: menu.out
 	@./menu.out $(DB_USER) $(DB_PASSWORD)
 
 setup:
