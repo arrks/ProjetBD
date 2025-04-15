@@ -114,10 +114,10 @@ exception
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end inscrire_etudiant;
 
--- Procédure 4: Inscrire un étudiant à un cours ou le désinscrire
--- Description: Cette procédure permet d'inscrire un étudiant à un cours ou de le désinscrire d'un cours.
--- Utilisation: EXECUTE inscrire_etudiant_cours (p_NI, p_sigle, p_semestre, p_action);
--- p_action peut être 'inscrire' ou 'desinscrire'.
+-- Procédure 4: Gestion des inscriptions d'un étudiant à un cours
+-- Description: Cette procédure permet d'inscrire ou de désinscrire un étudiant à un cours pour une session donnée.
+-- Utilisation: EXECUTE inscrire_etudiant_cours(p_NI, p_sigle, p_semestre, p_action);
+-- Le paramètre p_action doit être 'inscrire' pour inscrire l'étudiant ou 'desinscrire' pour le désinscrire.
 create or replace procedure inscrire_etudiant_cours (
    p_NI       in Etudiants.NI%type,
    p_sigle    in CoursOfferts.sigle%type,
@@ -132,7 +132,7 @@ begin
    select NI
      into v_numero
      from Etudiants
-    where NI = p_NI;
+    where NI = upper(p_NI);
 
    -- Vérifier si le cours existe
    select sigle,
@@ -141,36 +141,41 @@ begin
       v_sigle,
       v_semestre
      from CoursOfferts
-    where sigle = p_sigle
-      and semestre = p_semestre;
+    where sigle = upper(p_sigle)
+      and semestre = upper(p_semestre);
 
-   if p_action = 'inscrire' then
-      insert into InscriptionCours (
+   if p_action = 'i' then
+      insert into INSCRIPTIONS (
          NI,
          sigle,
          semestre
-      ) values ( p_NI,
-                 p_sigle,
-                 p_semestre );
+      ) values ( upper(p_NI),
+                 upper(p_sigle),
+                 upper(p_semestre) );
       DBMS_OUTPUT.PUT_LINE('Inscription réussie pour l''étudiant '
-                           || p_NI
+                           || upper(p_NI)
                            || ' au cours '
-                           || p_sigle);
-   elsif p_action = 'desinscrire' then
-      delete from InscriptionCours
-       where NI = p_NI
-         and sigle = p_sigle
-         and semestre = p_semestre;
+                           || upper(p_sigle));
+   elsif p_action = 'd' then
+      delete from INSCRIPTIONS
+       where NI = upper(p_NI)
+         and sigle = upper(p_sigle)
+         and semestre = upper(p_semestre);
       DBMS_OUTPUT.PUT_LINE('Désinscription réussie pour l''étudiant '
-                           || p_NI
+                           || upper(p_NI)
                            || ' du cours '
-                           || p_sigle);
+                           || upper(p_sigle));
    else
       DBMS_OUTPUT.PUT_LINE('Action non reconnue. Utilisez ''inscrire'' ou ''desinscrire''.');
    end if;
 exception
    when no_data_found then
       DBMS_OUTPUT.PUT_LINE('Erreur: Étudiant ou cours non trouvé.');
+   when dup_val_on_index then
+      DBMS_OUTPUT.PUT_LINE('Erreur: L''étudiant '
+                           || p_NI
+                           || ' est déjà inscrit au cours '
+                           || p_sigle);
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end inscrire_etudiant_cours;
