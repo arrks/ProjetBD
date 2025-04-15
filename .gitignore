@@ -42,3 +42,7 @@ core
 # Ignorer les fichiers spécifiques à d'autres IDE
 .idea/
 *.iml
+
+# Ignorer les fichiers de configuration de l'environnement
+.env
+config.mk

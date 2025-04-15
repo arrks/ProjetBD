@@ -18,7 +18,7 @@ void traiterFichierRepertoire(OCI_Connection *conn);
 void traiterFichierEvaluations(OCI_Connection *conn);
 void traiterFichierEchelle(OCI_Connection *conn);
 
-int main(){
+int main(int argc, char *argv[]){
     try{
         OCI_EnableWarnings(true);
 
@@ -29,10 +29,16 @@ int main(){
 
         // Se conencter à la base de données
         string nomUtilisateur, motDePasse;
-        cout << "Nom d'utilisateur : ";
-        cin >> nomUtilisateur;
-        cout << "Mot de passe : ";
-        cin >> motDePasse;
+        if (argc >= 3) {
+            nomUtilisateur = argv[1];
+            motDePasse = argv[2];
+        } else {
+            cout << "Nom d'utilisateur : ";
+            cin >> nomUtilisateur;
+            cout << "Mot de passe : ";
+            cin >> motDePasse;
+            cout << endl;
+        }
 
         OCI_Connection *conn = OCI_ConnectionCreate("xe", const_cast<char*>(nomUtilisateur.c_str()), const_cast<char*>(motDePasse.c_str()), OCI_SESSION_DEFAULT);
         if(!conn) 
