@@ -300,13 +300,15 @@ create or replace procedure calculer_note_finale (
    p_sigle    in notes.sigle%type,
    p_semestre in notes.semestre%type
 ) is
-   v_NI          notes.NI%type;
-   v_sigle       notes.sigle%type;
-   v_semestre    notes.semestre%type;
-   v_note        number;
-   v_total       number := 0;
-   v_poids       number := 0;
-   v_poids_total number := 0;
+   v_NI           notes.NI%type;
+   v_sigle        notes.sigle%type;
+   v_semestre     notes.semestre%type;
+   v_note         number;
+   v_evalComplete number;
+   v_neval        number;
+   v_total        number := 0;
+   v_poids        number := 0;
+   v_poids_total  number := 0;
 begin
    -- Vérifier si l'étudiant existe
    select NI
@@ -324,17 +326,37 @@ begin
     where sigle = p_sigle
       and semestre = p_semestre;
 
+   -- Vérifier si tout les évaluations sont présentes
+   select count(*)
+     into v_evalComplete
+     from Evaluations
+    where sigle = p_sigle;
+
+   select count(*)
+     into v_neval
+     from notes
+    where sigle = p_sigle
+      and semestre = p_semestre
+      and NI = p_NI;
+   if v_neval != v_evalComplete then
+      DBMS_OUTPUT.PUT_LINE('Erreur: Il manque des notes pour l''étudiant '
+                           || p_NI
+                           || ' au cours '
+                           || p_sigle);
+      return;
+   end if;
+
    -- Calculer la note finale
    for r in (
-      select Nomeval,
-             points,
-             poids
+      select e.Nomeval,
+             n.points,
+             e.poids
         from notes n,
              Evaluations e
        where n.Nomeval = e.Nomeval
          and n.sigle = e.sigle
-         and n.semestre = e.semestre
          and n.NI = p_NI
+         and n.semestre = p_semestre
    ) loop
       v_total := v_total + ( r.points * r.poids );
       v_poids_total := v_poids_total + r.poids;
