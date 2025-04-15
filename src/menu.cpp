@@ -100,7 +100,8 @@ int main(int argc, char *argv[]){
                 ajouterNote(conn);
                 break;
             case 'F':
-                cout << "Execution de la procedure (F) : Calculer la note finale pour un cours." << endl;
+                // cout << "Execution de la procedure (F) : Calculer la note finale pour un cours." << endl;
+                calculerNoteFinale(conn);
                 break;
             case 'M':
                 cout << "Execution de la procedure (M) : Calculer la moyenne cumulative." << endl;
@@ -384,6 +385,29 @@ void ajouterNote(OCI_Connection *conn){
     default:    // Option inconnue
         cout << "(" << actionString << ") n'est pas une option reconnue.\nVeuillez inscrire (A) ou (E)." << endl;
         break;
+    }
+
+    OCI_StatementFree(executeSt);
+}
+
+void calculerNoteFinale(OCI_Connection *conn){
+    OCI_Statement *executeSt = OCI_StatementCreate(conn);
+
+    // Demander la session
+    string NI, sigle, session;
+    cout << "Calculer la note finale. Veuillez fournir l'information suivante :" << endl;
+    NI = prompt("NI : ");
+    sigle = prompt("Sigle : ");
+    session = prompt("Session (format A21) : ");
+
+    string script = "BEGIN calculer_note_finale('" + NI + "', '" + sigle + "', '" + session + "'); END;";
+
+    // Executer la procedure
+    if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
+        const otext *err = OCI_ErrorGetString(OCI_GetLastError());
+        cerr << "Erreur lors de l'execution de la procedure calculer_note_finale : " << (err ? err : "Erreur inconnue") << endl;
+    } else {
+        AfficherDisplayBuffer(conn);
     }
 
     OCI_StatementFree(executeSt);
