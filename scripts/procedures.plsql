@@ -32,27 +32,23 @@ begin
 end liste_programmes;
 
 -- Procédure 2: Afficher la liste de cours par session, en ordre des sigles
--- Description: Cette procédure permet d'afficher la liste des cours offerts par session, triée par sigle.
--- Utilisation: EXECUTE liste_cours_par_session;
-create or replace procedure liste_cours_par_session is
+-- Description: Cette procédure affiche la liste des cours disponibles pour une session spécifique, triée par ordre alphabétique des sigles.
+-- Utilisation: EXECUTE liste_cours_par_session (p_semestre);
+create or replace procedure liste_cours_par_session (
+   p_semestre in CoursOfferts.semestre%type
+) is
    cursor c_cours is
-   select sigle,
-          semestre
+   select sigle
      from CoursOfferts
-    order by semestre,
-             sigle;
-   v_sigle    CoursOfferts.sigle%type;
-   v_semestre CoursOfferts.semestre%type;
+    where semestre = upper(p_semestre)
+    order by sigle;
+   v_sigle CoursOfferts.sigle%type;
 begin
    open c_cours;
    loop
-      fetch c_cours into
-         v_sigle,
-         v_semestre;
+      fetch c_cours into v_sigle;
       exit when c_cours%NOTFOUND;
-      DBMS_OUTPUT.PUT_LINE(v_semestre
-                           || ' - '
-                           || v_sigle);
+      DBMS_OUTPUT.PUT_LINE(v_sigle);
    end loop;
    close c_cours;
 end liste_cours_par_session;
