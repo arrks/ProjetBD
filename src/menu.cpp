@@ -3,6 +3,7 @@
 // Alec Jones - A00216262
 
 #include <iostream>
+#include <string>
 #include <limits>
 #include <cctype>
 #include <ocilib.h>
@@ -95,7 +96,8 @@ int main(int argc, char *argv[]){
                 inscrireEtudiantCours(conn);
                 break;
             case 'N':
-                cout << "Execution de la procedure (N) : Ajouter ou supprimer une note a un evaluation." << endl;
+                // cout << "Execution de la procedure (N) : Ajouter ou supprimer une note a un evaluation." << endl;
+                ajouterNote(conn);
                 break;
             case 'F':
                 cout << "Execution de la procedure (F) : Calculer la note finale pour un cours." << endl;
@@ -317,6 +319,70 @@ void inscrireEtudiantCours(OCI_Connection *conn){
 
     default:    // Option inconnue
         cout << "(" << actionString << ") n'est pas une option reconnue.\nVeuillez inscrire (I) ou (D)." << endl;
+        break;
+    }
+
+    OCI_StatementFree(executeSt);
+}
+
+void ajouterNote(OCI_Connection *conn){
+    OCI_Statement *executeSt = OCI_StatementCreate(conn);
+
+    // Demander si on veut ajouter ou enlever une note
+    string actionString = prompt("Voulez-vous inscrire une note d'evaluation pour un etudiant (A) ou enlever une note d'evaluation pour un etudiant (E)?");
+    char action = normaliseInput(actionString);
+
+    string NI, sigle, session, nomEval, note, script;
+    
+    // Executer la procedure
+    switch(action){
+    case 'A':   // Ajouter
+        // Demander pour les paramètres
+        cout << "Ajout d'une note. Veuillez fournir l'information suivante : " << endl;
+        NI = prompt("NI : ");
+        sigle = prompt("Sigle du cours : ");
+        session = prompt("Session (format A21) : ");
+        cout << "Nom de l'evaluation : \n> ";
+        getline(cin, nomEval);
+        note = prompt("Note : ");
+
+        // cout << NI << endl << sigle << endl << session << endl << nomEval << endl << note << endl;
+
+        script = "BEGIN ajouter_note('" + NI + "', '" + sigle + "', '" + session + "', '" + nomEval + "', '" + note + "'); END;";
+
+        if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
+            const otext *err = OCI_ErrorGetString(OCI_GetLastError());
+            cerr << "Erreur lors de l'execution de la procedure ajouter_note (ajout) : " << (err ? err : "Erreur inconnue") << endl;
+        } else {
+            AfficherDisplayBuffer(conn);
+        }
+
+        break;
+
+    case 'E':   // Désinscription
+        // Demander pour les paramètres
+        cout << "Enlever une note. Veuillez fournir l'information suivante : " << endl;
+        NI = prompt("NI : ");
+        sigle = prompt("Sigle du cours : ");
+        session = prompt("Session (format A21) : ");
+        cout << "Nom de l'evaluation : \n> ";
+        getline(cin, nomEval);
+
+        // cout << NI << endl << sigle << endl << session << endl << nomEval << endl << note << endl;
+
+        script = "BEGIN ajouter_note('" + NI + "', '" + sigle + "', '" + session + "', '" + nomEval + "'); END;";
+
+        if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
+            const otext *err = OCI_ErrorGetString(OCI_GetLastError());
+            cerr << "Erreur lors de l'execution de la procedure ajouter_note (enlever) : " << (err ? err : "Erreur inconnue") << endl;
+        } else {
+            AfficherDisplayBuffer(conn);
+        }
+
+        break;
+
+    default:    // Option inconnue
+        cout << "(" << actionString << ") n'est pas une option reconnue.\nVeuillez inscrire (A) ou (E)." << endl;
         break;
     }
 
