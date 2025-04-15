@@ -53,57 +53,63 @@ begin
    close c_cours;
 end liste_cours_par_session;
 
--- Procédure 3: S'inscrire comme nouvel étudiant
--- Description: Cette procédure permet à un nouvel étudiant de s'inscrire à un programme existant ou se désinscrire d'un programme.
--- Utilisation: EXECUTE inscrire_etudiant (p_NI, p_nom, p_programme, p_action);
--- p_action peut être 'inscrire' ou 'desinscrire'.
+-- Procédure 3: Inscription ou désinscription d'un nouvel étudiant
+-- Description: Cette procédure permet à un nouvel étudiant de s'inscrire à un programme existant ou de se désinscrire de celui-ci.
+-- Utilisation: EXECUTE inscrire_etudiant (p_NI, p_programme, p_action, p_nom);
+-- p_action doit être 'i' pour inscrire ou 'd' pour désinscrire.
 create or replace procedure inscrire_etudiant (
    p_NI        in Etudiants.NI%type,
-   p_nom       in Etudiants.Nom%type,
    p_programme in Etudiants.ID%type,
-   p_action    in varchar2
+   p_action    in varchar2,
+   p_nom       in Etudiants.Nom%type default null
 ) is
    v_programme Etudiants.ID%type;
-   v_numero    Etudiants.NI%type;
+   v_NI        Etudiants.NI%type;
 begin
-   -- Vérifier si l'étudiant existe
-   select NI
-     into v_numero
-     from Etudiants
-    where NI = p_NI;
-
    -- Vérifier si le programme existe
    select ID
      into v_programme
      from Programmes
     where ID = p_programme;
 
-   if p_action = 'inscrire' then
-      insert into Inscription (
+   if p_action = 'i' then
+      insert into ETUDIANTS (
          NI,
          nom,
          ID
       ) values ( p_NI,
                  p_nom,
                  p_programme );
+      commit;
       DBMS_OUTPUT.PUT_LINE('Inscription réussie pour l''étudiant '
                            || p_NI
                            || ' au programme '
                            || p_programme);
-   elsif p_action = 'desinscrire' then
-      delete from Inscription
+   elsif p_action = 'd' then
+      -- Vérifier si l'étudiant existe uniquement lors de la désinscription
+      select NI
+        into v_NI
+        from Etudiants
+       where NI = p_NI;
+
+      delete from ETUDIANTS
        where NI = p_NI
-         and IDProgramme = p_programme;
+         and ID = p_programme;
       DBMS_OUTPUT.PUT_LINE('Désinscription réussie pour l''étudiant '
                            || p_NI
                            || ' du programme '
                            || p_programme);
    else
-      DBMS_OUTPUT.PUT_LINE('Action non reconnue. Utilisez ''inscrire'' ou ''desinscrire''.');
+      DBMS_OUTPUT.PUT_LINE('Action non reconnue. Utilisez ''i'' ou ''d''.');
    end if;
 exception
    when no_data_found then
       DBMS_OUTPUT.PUT_LINE('Erreur: Étudiant ou programme non trouvé.');
+   when dup_val_on_index then
+      DBMS_OUTPUT.PUT_LINE('Erreur: L''étudiant '
+                           || p_NI
+                           || ' est déjà inscrit au programme '
+                           || p_programme);
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end inscrire_etudiant;
