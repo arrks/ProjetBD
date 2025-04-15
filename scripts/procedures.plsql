@@ -104,12 +104,18 @@ begin
    end if;
 exception
    when no_data_found then
-      DBMS_OUTPUT.PUT_LINE('Erreur: Étudiant ou programme non trouvé.');
+      RAISE_APPLICATION_ERROR(
+         -20001,
+         'Erreur: Étudiant ou programme non trouvé.'
+      );
    when dup_val_on_index then
-      DBMS_OUTPUT.PUT_LINE('Erreur: L''étudiant '
-                           || p_NI
-                           || ' est déjà inscrit au programme '
-                           || p_programme);
+      RAISE_APPLICATION_ERROR(
+         -20005,
+         'Erreur: L''étudiant '
+         || p_NI
+         || ' est déjà inscrit au programme '
+         || p_programme
+      );
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end inscrire_etudiant;
@@ -171,19 +177,25 @@ begin
    end if;
 exception
    when no_data_found then
-      DBMS_OUTPUT.PUT_LINE('Erreur: Étudiant ou cours non trouvé.');
+      raise_application_error(
+         -20002,
+         'Erreur: Étudiant ou cours non trouvé.'
+      );
    when dup_val_on_index then
-      DBMS_OUTPUT.PUT_LINE('Erreur: L''étudiant '
-                           || p_NI
-                           || ' est déjà inscrit au cours '
-                           || p_sigle);
+      RAISE_APPLICATION_ERROR(
+         -20004,
+         'Erreur: L''étudiant '
+         || p_NI
+         || ' est déjà inscrit au cours '
+         || p_sigle
+      );
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end inscrire_etudiant_cours;
 
 -- Procédure 5: Ajouter ou supprimer la note obtenue
 -- Description: Cette procédure permet d'ajouter ou de supprimer la note obtenue par un étudiant à une évaluation d'un cours à une session donnée.
--- Utilisation: EXECUTE ajouter_note (p_NI, p_sigle, p_semestre, p_nomeval p_note);
+-- Utilisation: EXECUTE ajouter_note (p_NI, p_sigle, p_semestre, p_nomeval, p_note);
 -- pour supprimer laisser p_note vide.
 create or replace procedure ajouter_note (
    p_NI       in notes.NI%type,
@@ -202,6 +214,27 @@ begin
      into v_NI
      from Etudiants
     where NI = p_NI;
+
+   begin
+      -- Vérifier si le cours existe et si l'étudiant est inscrit
+      select NI,
+             sigle,
+             semestre
+        into
+         v_NI,
+         v_sigle,
+         v_semestre
+        from inscriptions
+       where NI = p_NI
+         and sigle = p_sigle
+         and semestre = p_semestre;
+   exception
+      when no_data_found then
+         raise_application_error(
+            -20001,
+            'Erreur: L''étudiant n''est pas inscrit dans le cours.'
+         );
+   end;
 
    -- Vérifier si l'évaluation existe
    select sigle,
@@ -242,12 +275,18 @@ begin
    end if;
 exception
    when no_data_found then
-      DBMS_OUTPUT.PUT_LINE('Erreur: Étudiant ou évaluation non trouvé.');
+      RAISE_APPLICATION_ERROR(
+         -20002,
+         'Erreur: Étudiant ou évaluation non trouvé.'
+      );
    when dup_val_on_index then
-      DBMS_OUTPUT.PUT_LINE('Erreur: L''étudiant '
-                           || p_NI
-                           || ' a déjà une note pour l''évaluation '
-                           || p_nomeval);
+      RAISE_APPLICATION_ERROR(
+         -20003,
+         'Erreur: La note existe déjà pour l''étudiant '
+         || p_NI
+         || ' au cours '
+         || p_sigle
+      );
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end ajouter_note;
