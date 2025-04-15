@@ -223,6 +223,7 @@ begin
                  p_semestre,
                  p_nomeval,
                  p_note );
+      commit;
       DBMS_OUTPUT.PUT_LINE('Note ajoutée pour l''étudiant '
                            || p_NI
                            || ' au cours '
