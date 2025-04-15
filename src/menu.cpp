@@ -27,7 +27,14 @@ int main(){
             throw runtime_error("Erreur avec l'initialisation de l'environnement OCILIB.");
 
         // Se conencter à la base de données
-        OCI_Connection *conn = OCI_ConnectionCreate("xe", "esd0586", "INFO4030_H25", OCI_SESSION_DEFAULT);
+        string nomUtilisateur, motDePasse;
+        cout << "Nom d'utilisateur : ";
+        cin >> nomUtilisateur;
+        cout << "Mot de passe : ";
+        cin >> motDePasse;
+        cout << endl;
+
+        OCI_Connection *conn = OCI_ConnectionCreate("xe", const_cast<char*>(nomUtilisateur.c_str()), const_cast<char*>(motDePasse.c_str()), OCI_SESSION_DEFAULT);
         if(!conn) 
             throw runtime_error("Connexion a la base de donnees a echouee.");
 
