@@ -156,6 +156,7 @@ begin
                            || upper(p_NI)
                            || ' au cours '
                            || upper(p_sigle));
+      commit;
    elsif p_action = 'd' then
       delete from INSCRIPTIONS
        where NI = upper(p_NI)
@@ -204,9 +205,10 @@ begin
 
    -- Vérifier si l'évaluation existe
    select sigle,
-          nomeval,
-          into v_sigle,
-          v_nomeval
+          nomeval
+     into
+      v_sigle,
+      v_nomeval
      from Evaluations
     where sigle = p_sigle
       and nomeval = p_nomeval;
@@ -241,6 +243,11 @@ begin
 exception
    when no_data_found then
       DBMS_OUTPUT.PUT_LINE('Erreur: Étudiant ou évaluation non trouvé.');
+   when dup_val_on_index then
+      DBMS_OUTPUT.PUT_LINE('Erreur: L''étudiant '
+                           || p_NI
+                           || ' a déjà une note pour l''évaluation '
+                           || p_nomeval);
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end ajouter_note;
