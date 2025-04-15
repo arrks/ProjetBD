@@ -20,6 +20,47 @@ void inscrireEtudiantCours(OCI_Connection *conn);
 void ajouterNote(OCI_Connection *conn);
 void calculerNoteFinale(OCI_Connection *conn);
 
+void errorHandler(OCI_Error *err)
+{
+    if (!err) {
+        cerr << "Erreur système" << endl;
+        return;
+    }
+
+    int errorCode = OCI_ErrorGetOCICode(err);
+    
+    switch(errorCode) {
+        case 20001:
+            cerr << "Étudiant non trouvé" << endl;
+            break;
+        case 20002:
+            cerr << "Évaluation non trouvée" << endl;
+            break;
+        case 20003:
+            cerr << "La note existe déjà pour l'étudiant au cours" << endl;
+            break;
+        case 20004:
+            cerr << "L'étudiant est déjà inscrit au cours" << endl;
+            break;
+        case 20005:
+            cerr << "L'étudiant est déjà inscrit au programme" << endl;
+            break;
+        case 20006:
+            cerr << "Le programme n'existe pas" << endl;
+            break;
+        case 20007:
+            cerr << "Le cours n'existe pas" << endl;
+            break;
+        case 20008:
+            cerr << "L'étudiant n'est pas inscrit au cours" << endl;
+            break;
+        case 20009:
+            cerr << "Il manque des notes pour l'étudiant au cours" << endl;
+            break;
+        default:
+            cerr << "Erreur de base de données" << endl;
+    }
+}
 
 int main(int argc, char *argv[]){
     try{
@@ -27,7 +68,7 @@ int main(int argc, char *argv[]){
 
 
         // Initialiser OCILIB
-        if(!OCI_Initialize(NULL, NULL, OCI_ENV_DEFAULT))
+        if(!OCI_Initialize(errorHandler, NULL, OCI_ENV_DEFAULT))
             throw runtime_error("Erreur avec l'initialisation de l'environnement OCILIB.");
 
         // Connexion à la base de données
@@ -183,10 +224,7 @@ void listeProgrammes(OCI_Connection *conn){
     OCI_Statement *executeSt = OCI_StatementCreate(conn);
 
     // Executer la procedure
-    if (!OCI_ExecuteStmt(executeSt, "BEGIN liste_programmes; END;")) {
-        const otext *err = OCI_ErrorGetString(OCI_GetLastError());
-        cerr << "Erreur lors de l'execution de la procedure liste_programmes : " << (err ? err : "Erreur inconnue") << endl;
-    } else {
+    if (OCI_ExecuteStmt(executeSt, "BEGIN liste_programmes; END;")) {   
         cout << "Programmes :\n--------------------" << endl;
         AfficherDisplayBuffer(conn);
     }
@@ -204,10 +242,7 @@ void listeCoursParSession(OCI_Connection *conn){
     string script = "BEGIN liste_cours_par_session('" + session + "'); END;";
 
     // Executer la procedure
-    if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
-        const otext *err = OCI_ErrorGetString(OCI_GetLastError());
-        cerr << "Erreur lors de l'execution de la procedure liste_cours_par_session : " << (err ? err : "Erreur inconnue") << endl;
-    } else {
+    if(OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){ 
         cout << "Cours pour la session " << session << " :\n--------------------" << endl;
         AfficherDisplayBuffer(conn);
     }
@@ -235,10 +270,7 @@ void inscrireEtudiant(OCI_Connection *conn){
 
         script = "BEGIN inscrire_etudiant('" + NI + "', " + programmeID + ", 'i', '" + nom + "'); END;";
 
-        if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
-            const otext *err = OCI_ErrorGetString(OCI_GetLastError());
-            cerr << "Erreur lors de l'execution de la procedure inscrire_etudiant (inscription) : " << (err ? err : "Erreur inconnue") << endl;
-        } else {
+        if(OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
             AfficherDisplayBuffer(conn);
         }
 
@@ -253,10 +285,7 @@ void inscrireEtudiant(OCI_Connection *conn){
 
         script = "BEGIN inscrire_etudiant('" + NI + "', " + programmeID + ", 'd'); END;";
 
-        if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
-            const otext *err = OCI_ErrorGetString(OCI_GetLastError());
-            cerr << "Erreur lors de l'execution de la procedure inscrire_etudiant (desinscription) : " << (err ? err : "Erreur inconnue") << endl;
-        } else {
+        if(OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
             AfficherDisplayBuffer(conn);
         }
 
@@ -290,10 +319,7 @@ void inscrireEtudiantCours(OCI_Connection *conn){
 
         script = "BEGIN inscrire_etudiant_cours('" + NI + "', '" + sigle + "', '" + session +  "', 'i'); END;";
 
-        if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
-            const otext *err = OCI_ErrorGetString(OCI_GetLastError());
-            cerr << "Erreur lors de l'execution de la procedure inscrire_etudiant_cours (inscription) : " << (err ? err : "Erreur inconnue") << endl;
-        } else {
+        if(OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
             AfficherDisplayBuffer(conn);
         }
 
@@ -309,10 +335,7 @@ void inscrireEtudiantCours(OCI_Connection *conn){
 
         script = "BEGIN inscrire_etudiant_cours('" + NI + "', '" + sigle + "', '" + session +  "', 'd'); END;";
 
-        if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
-            const otext *err = OCI_ErrorGetString(OCI_GetLastError());
-            cerr << "Erreur lors de l'execution de la procedure inscrire_etudiant_cours (desinscription) : " << (err ? err : "Erreur inconnue") << endl;
-        } else {
+        if(OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
             AfficherDisplayBuffer(conn);
         }
 
@@ -403,10 +426,7 @@ void calculerNoteFinale(OCI_Connection *conn){
     string script = "BEGIN calculer_note_finale('" + NI + "', '" + sigle + "', '" + session + "'); END;";
 
     // Executer la procedure
-    if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
-        const otext *err = OCI_ErrorGetString(OCI_GetLastError());
-        cerr << "Erreur lors de l'execution de la procedure calculer_note_finale : " << (err ? err : "Erreur inconnue") << endl;
-    } else {
+    if(OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
         AfficherDisplayBuffer(conn);
     }
 

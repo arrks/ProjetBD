@@ -1,6 +1,17 @@
 -- Document de procédures à être exécutées par le menu cpp.
 -- Les procédures seront stockées dans la base de données mais le code restera dans ce fichier pour documentation.
 
+-- Codes d'erreur:
+-- -20001: Étudiant non trouvé.
+-- -20002: Évaluation non trouvée.
+-- -20003: La note existe déjà pour l'étudiant au cours.
+-- -20004: L'étudiant est déjà inscrit au cours.
+-- -20005: L'étudiant est déjà inscrit au programme.
+-- -20006: Le programme n'existe pas.
+-- -20007: Le cours n'existe pas.
+-- -20008: L'étudiant n'est pas inscrit au cours.
+-- -20009: Il manque des notes pour l'étudiant au cours.
+
 -- Procédure 1: Liste de programmes
 -- Description: Cette procédure permet de lister les programmes disponibles dans la base de données en ordre alphabétique par ID.
 -- Utilisation: EXECUTE liste_programmes;
@@ -67,10 +78,20 @@ create or replace procedure inscrire_etudiant (
    v_NI        Etudiants.NI%type;
 begin
    -- Vérifier si le programme existe
-   select ID
-     into v_programme
-     from Programmes
-    where ID = p_programme;
+   begin
+      select ID
+        into v_programme
+        from Programmes
+       where ID = p_programme;
+   exception
+      when no_data_found then
+         raise_application_error(
+            -20006,
+            'Erreur: Le programme '
+            || p_programme
+            || ' n''existe pas.'
+         );
+   end;
 
    if p_action = 'i' then
       insert into ETUDIANTS (
@@ -87,10 +108,21 @@ begin
                            || p_programme);
    elsif p_action = 'd' then
       -- Vérifier si l'étudiant existe uniquement lors de la désinscription
-      select NI
-        into v_NI
-        from Etudiants
-       where NI = p_NI;
+      begin
+         select NI
+           into v_NI
+           from Etudiants
+          where NI = p_NI;
+      exception
+         when no_data_found then
+            raise_application_error(
+               -20001,
+               'Erreur: L''étudiant '
+               || p_NI
+               || ' n''est pas inscrit au programme '
+               || p_programme
+            );
+      end;
 
       delete from ETUDIANTS
        where NI = p_NI
@@ -103,11 +135,6 @@ begin
       DBMS_OUTPUT.PUT_LINE('Action non reconnue. Utilisez ''i'' ou ''d''.');
    end if;
 exception
-   when no_data_found then
-      RAISE_APPLICATION_ERROR(
-         -20001,
-         'Erreur: Étudiant ou programme non trouvé.'
-      );
    when dup_val_on_index then
       RAISE_APPLICATION_ERROR(
          -20005,
@@ -135,20 +162,41 @@ create or replace procedure inscrire_etudiant_cours (
    v_numero   Etudiants.NI%type;
 begin
    -- Vérifier si l'étudiant existe
-   select NI
-     into v_numero
-     from Etudiants
-    where NI = upper(p_NI);
+   begin
+      select NI
+        into v_numero
+        from Etudiants
+       where NI = upper(p_NI);
+   exception
+      when no_data_found then
+         raise_application_error(
+            -20001,
+            'Erreur: L''étudiant '
+            || p_NI
+            || ' n''existe pas.'
+         );
+   end;
 
    -- Vérifier si le cours existe
-   select sigle,
-          semestre
-     into
-      v_sigle,
-      v_semestre
-     from CoursOfferts
-    where sigle = upper(p_sigle)
-      and semestre = upper(p_semestre);
+   begin
+      select sigle,
+             semestre
+        into
+         v_sigle,
+         v_semestre
+        from CoursOfferts
+       where sigle = upper(p_sigle)
+         and semestre = upper(p_semestre);
+   exception
+      when no_data_found then
+         raise_application_error(
+            -20007,
+            'Erreur: Le cours '
+            || p_sigle
+            || ' n''existe pas pour le semestre '
+            || p_semestre
+         );
+   end;
 
    if p_action = 'i' then
       insert into INSCRIPTIONS (
@@ -178,8 +226,8 @@ begin
 exception
    when no_data_found then
       raise_application_error(
-         -20002,
-         'Erreur: Étudiant ou cours non trouvé.'
+         -20008,
+         'Erreur: L''étudiant n''est pas inscrit au cours.'
       );
    when dup_val_on_index then
       RAISE_APPLICATION_ERROR(
@@ -210,13 +258,23 @@ create or replace procedure ajouter_note (
    v_nomeval  notes.Nomeval%type;
 begin
    -- Vérifier si l'étudiant existe
-   select NI
-     into v_NI
-     from Etudiants
-    where NI = p_NI;
-
    begin
-      -- Vérifier si le cours existe et si l'étudiant est inscrit
+      select NI
+        into v_NI
+        from Etudiants
+       where NI = p_NI;
+   exception
+      when no_data_found then
+         raise_application_error(
+            -20001,
+            'Erreur: L''étudiant '
+            || p_NI
+            || ' n''existe pas.'
+         );
+   end;
+
+   -- Vérifier si l'étudiant est inscrit au cours
+   begin
       select NI,
              sigle,
              semestre
@@ -231,20 +289,31 @@ begin
    exception
       when no_data_found then
          raise_application_error(
-            -20001,
+            -20008,
             'Erreur: L''étudiant n''est pas inscrit dans le cours.'
          );
    end;
 
    -- Vérifier si l'évaluation existe
-   select sigle,
-          nomeval
-     into
-      v_sigle,
-      v_nomeval
-     from Evaluations
-    where sigle = p_sigle
-      and nomeval = p_nomeval;
+   begin
+      select sigle,
+             nomeval
+        into
+         v_sigle,
+         v_nomeval
+        from Evaluations
+       where sigle = p_sigle
+         and nomeval = p_nomeval;
+   exception
+      when no_data_found then
+         raise_application_error(
+            -20002,
+            'Erreur: L''évaluation '
+            || p_nomeval
+            || ' n''existe pas pour le cours '
+            || p_sigle
+         );
+   end;
 
    if p_note is not null then
       insert into notes (
@@ -275,9 +344,9 @@ begin
    end if;
 exception
    when no_data_found then
-      RAISE_APPLICATION_ERROR(
-         -20002,
-         'Erreur: Étudiant ou évaluation non trouvé.'
+      raise_application_error(
+         -20008,
+         'Erreur: L''étudiant n''est pas inscrit dans le cours.'
       );
    when dup_val_on_index then
       RAISE_APPLICATION_ERROR(
@@ -311,20 +380,41 @@ create or replace procedure calculer_note_finale (
    v_poids_total  number := 0;
 begin
    -- Vérifier si l'étudiant existe
-   select NI
-     into v_NI
-     from Etudiants
-    where NI = p_NI;
+   begin
+      select NI
+        into v_NI
+        from Etudiants
+       where NI = p_NI;
+   exception
+      when no_data_found then
+         raise_application_error(
+            -20001,
+            'Erreur: L''étudiant '
+            || p_NI
+            || ' n''existe pas.'
+         );
+   end;
 
    -- Vérifier si le cours existe
-   select sigle,
-          semestre
-     into
-      v_sigle,
-      v_semestre
-     from CoursOfferts
-    where sigle = p_sigle
-      and semestre = p_semestre;
+   begin
+      select sigle,
+             semestre
+        into
+         v_sigle,
+         v_semestre
+        from CoursOfferts
+       where sigle = p_sigle
+         and semestre = p_semestre;
+   exception
+      when no_data_found then
+         raise_application_error(
+            -20007,
+            'Erreur: Le cours '
+            || p_sigle
+            || ' n''existe pas pour le semestre '
+            || p_semestre
+         );
+   end;
 
    -- Vérifier si tout les évaluations sont présentes
    select count(*)
@@ -339,11 +429,13 @@ begin
       and semestre = p_semestre
       and NI = p_NI;
    if v_neval != v_evalComplete then
-      DBMS_OUTPUT.PUT_LINE('Erreur: Il manque des notes pour l''étudiant '
-                           || p_NI
-                           || ' au cours '
-                           || p_sigle);
-      return;
+      raise_application_error(
+         -20009,
+         'Erreur: Il manque des notes pour l''étudiant '
+         || p_NI
+         || ' au cours '
+         || p_sigle
+      );
    end if;
 
    -- Calculer la note finale
@@ -374,8 +466,6 @@ begin
       DBMS_OUTPUT.PUT_LINE('Aucune note trouvée pour l''étudiant ' || p_NI);
    end if;
 exception
-   when no_data_found then
-      DBMS_OUTPUT.PUT_LINE('Erreur: Étudiant ou cours non trouvé.');
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end calculer_note_finale;
