@@ -9,6 +9,9 @@
 using namespace std;
 
 char normaliseInput(string input);
+void AfficherDisplayBuffer(OCI_Connection *conn);
+string prompt();
+string prompt(string promptText);
 void listeProgrammes(OCI_Connection *conn);
 void listeCoursParSession(OCI_Connection *conn);
 void inscrireEtudiant(OCI_Connection *conn);
@@ -38,6 +41,9 @@ int main(){
         if(!conn) 
             throw runtime_error("Connexion a la base de donnees a echouee.");
 
+        // Enable output
+        OCI_ServerEnableOutput(conn, 32000, 5, 255);
+
         // Page principale
         string userInput;
         cout << "====================\nBienvenue sur Mini Socrate!\n====================" << endl;
@@ -45,9 +51,7 @@ int main(){
     
         while(true){
             // Lire la commande entrée
-            cout << "> ";
-            cin >> userInput;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            userInput = prompt();
     
             // Exécuter la commande
             switch(normaliseInput(userInput)){
@@ -66,15 +70,16 @@ int main(){
             break;
             case 'X':
                 // cout << "Execution de la procedure (X) : Exit." << endl;
-                cout << "Terminaison du programme.\n--------------------" << endl << endl;
+                cout << "Terminaison du programme.\n====================" << endl << endl;
                 return 0;
             break;
             case 'P':
-                cout << "Execution de la procedure (P) : Afficher la liste des programmes." << endl;
-                // listeProgrammes(conn);
+                // cout << "Execution de la procedure (P) : Afficher la liste des programmes." << endl;
+                listeProgrammes(conn);
                 break;
             case 'C':
-                cout << "Execution de la procedure (C) : Afficher la liste des cours par session." << endl;
+                // cout << "Execution de la procedure (C) : Afficher la liste des cours par session." << endl;
+                listeCoursParSession(conn);
                 break;
             case 'E':
                 cout << "Execution de la procedure (E) : Inscription ou desincription a un programme existant." << endl;
@@ -135,13 +140,59 @@ char normaliseInput(string input){
     return toupper(output);
 }
 
+void AfficherDisplayBuffer(OCI_Connection *conn){
+    const char *p;
+    while((p = OCI_ServerGetOutput(conn)) != NULL){
+        printf("%s", p);
+        printf("\n");
+    }
+}
+
+string prompt(){
+    string userInput;
+    cout << "> ";
+    cin >> userInput;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    
+    return userInput;
+}
+
+string prompt(string promptText){
+    string userInput;
+    cout << promptText << endl;
+    cout << "> ";
+    cin >> userInput;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    
+    return userInput;
+}
+
 void listeProgrammes(OCI_Connection *conn){
     OCI_Statement *executeSt = OCI_StatementCreate(conn);
 
     if (!OCI_ExecuteStmt(executeSt, "BEGIN liste_programmes; END;")) {
         const otext *err = OCI_ErrorGetString(OCI_GetLastError());
-        cerr << "Erreur lors de l'exécution de la procédure : " << (err ? err : "Erreur inconnue") << endl;
+        cerr << "Erreur lors de l'exécution de la procédure liste_programmes : " << (err ? err : "Erreur inconnue") << endl;
     } else {
-        cout << "Procédure exécutée avec succès." << endl;
+        cout << "Programmes :\n--------------------" << endl;
+        AfficherDisplayBuffer(conn);
+    }
+}
+
+void listeCoursParSession(OCI_Connection *conn){
+    OCI_Statement *executeSt = OCI_StatementCreate(conn);
+
+    // Demander la session
+    string session;
+    session = prompt("Choisissez la session que vous voulez afficher les cours : ");
+
+    string script = "BEGIN liste_cours_par_session('" + session + "'); END;";
+
+    if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
+        const otext *err = OCI_ErrorGetString(OCI_GetLastError());
+        cerr << "Erreur lors de l'exécution de la procédure liste_cours_par_session : " << (err ? err : "Erreur inconnue") << endl;
+    } else {
+        cout << "Cours pour la session " << session << " :\n--------------------" << endl;
+        AfficherDisplayBuffer(conn);
     }
 }
