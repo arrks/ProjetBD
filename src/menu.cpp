@@ -176,6 +176,7 @@ string prompt(string promptText){
 void listeProgrammes(OCI_Connection *conn){
     OCI_Statement *executeSt = OCI_StatementCreate(conn);
 
+    // Executer la procedure
     if (!OCI_ExecuteStmt(executeSt, "BEGIN liste_programmes; END;")) {
         const otext *err = OCI_ErrorGetString(OCI_GetLastError());
         cerr << "Erreur lors de l'execution de la procedure liste_programmes : " << (err ? err : "Erreur inconnue") << endl;
@@ -196,6 +197,7 @@ void listeCoursParSession(OCI_Connection *conn){
 
     string script = "BEGIN liste_cours_par_session('" + session + "'); END;";
 
+    // Executer la procedure
     if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
         const otext *err = OCI_ErrorGetString(OCI_GetLastError());
         cerr << "Erreur lors de l'execution de la procedure liste_cours_par_session : " << (err ? err : "Erreur inconnue") << endl;
@@ -211,11 +213,12 @@ void inscrireEtudiant(OCI_Connection *conn){
     OCI_Statement *executeSt = OCI_StatementCreate(conn);
 
     // Demander si on veut inscrire ou désinscrire
-    string modeString = prompt("Voulez-vous vous inscrire a un cours (I) ou vous desinscrire a un cours (D)?");
+    string modeString = prompt("Voulez-vous inscrire un etudiant a un programme (I) ou desinscrire un etudiant a un programme (D)?");
     char mode = normaliseInput(modeString);
 
     string NI, programmeID, nom, script;
     
+    // Executer la procedure
     switch(mode){
     case 'I':   // Inscription
         // Demander pour les paramètres
@@ -230,7 +233,6 @@ void inscrireEtudiant(OCI_Connection *conn){
             const otext *err = OCI_ErrorGetString(OCI_GetLastError());
             cerr << "Erreur lors de l'execution de la procedure inscrire_etudiant (inscription) : " << (err ? err : "Erreur inconnue") << endl;
         } else {
-            cout << "Etudiant " << nom << " (" << NI << ") a ete inscrit au programme avec le ID " << programmeID << ".\n--------------------" << endl;
             AfficherDisplayBuffer(conn);
         }
 
@@ -238,14 +240,26 @@ void inscrireEtudiant(OCI_Connection *conn){
 
 
     case 'D':   // Désinscription
+        // Demander pour les paramètres
+        cout << "Desinscription a un cours. Veuillez fournir l'information suivante : " << endl;
+        NI = prompt("NI : ");
+        programmeID = prompt("ID du programme : ");
 
-    default:
-        cout << "(" << modeString << ") n'est pas une option reconnue.\nVeuillez inscrire (I) ou (D).";
+        script = "BEGIN inscrire_etudiant('" + NI + "', " + programmeID + ", 'd'); END;";
+
+        if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
+            const otext *err = OCI_ErrorGetString(OCI_GetLastError());
+            cerr << "Erreur lors de l'execution de la procedure inscrire_etudiant (desinscription) : " << (err ? err : "Erreur inconnue") << endl;
+        } else {
+            AfficherDisplayBuffer(conn);
+        }
+
+        break;
+
+    default:    // Option inconnue
+        cout << "(" << modeString << ") n'est pas une option reconnue.\nVeuillez inscrire (I) ou (D)." << endl;
         break;
     }
-
-
-
 
     OCI_StatementFree(executeSt);
 }
