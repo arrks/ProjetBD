@@ -471,3 +471,104 @@ exception
 end calculer_note_finale;
 
 -- Procédure 7: 
+-- Description: Cette procedure permet de calculer la moyenne cumulative d’une étudiante ou d’un étudiant.
+-- Ce calcul peut s’effectuer même si l’étudiante ou l’étudiant n’a pas complété son programme, en autant qu’elle ou il a complété au moins un cours.
+-- La procedure utilise la procedure calculer_note_finale pour calculer la note finale de chaque cours et ensuite calcule la moyenne cumulative.
+-- Utilisation: EXECUTE calculer_moyenne_cumulative (p_NI);
+create or replace procedure calculer_moyenne_cumulative (
+   p_NI in Etudiants.NI%type
+) is
+   v_NI           Etudiants.NI%type;
+   v_total_points number := 0;
+   v_nb_cours     number := 0;
+   v_moyenne      number;
+   v_evalComplete number;
+   v_neval        number;
+begin
+   -- Vérifier si l'étudiant existe
+   begin
+      select NI
+        into v_NI
+        from Etudiants
+       where NI = p_NI;
+   exception
+      when no_data_found then
+         raise_application_error(
+            -20001,
+            'Erreur: L''étudiant '
+            || p_NI
+            || ' n''existe pas.'
+         );
+   end;
+
+   -- Parcourir tous les cours de l'étudiant
+   for cours in (
+      select distinct sigle,
+                      semestre
+        from inscriptions
+       where NI = p_NI
+   ) loop
+      -- Vérifier le nombre d'évaluations requises pour ce cours
+      select count(*)
+        into v_evalComplete
+        from Evaluations
+       where sigle = cours.sigle;
+
+      -- Vérifier le nombre d'évaluations complétées
+      select count(*)
+        into v_neval
+        from notes
+       where sigle = cours.sigle
+         and semestre = cours.semestre
+         and NI = p_NI;
+
+      -- Si toutes les évaluations sont complétées, calculer la note
+      if v_neval = v_evalComplete then
+         declare
+            v_note        number;
+            v_total       number := 0;
+            v_poids_total number := 0;
+         begin
+            for r in (
+               select e.Nomeval,
+                      n.points,
+                      e.poids
+                 from notes n,
+                      Evaluations e
+                where n.Nomeval = e.Nomeval
+                  and n.sigle = e.sigle
+                  and n.NI = p_NI
+                  and n.sigle = cours.sigle
+                  and n.semestre = cours.semestre
+            ) loop
+               v_total := v_total + ( r.points * r.poids );
+               v_poids_total := v_poids_total + r.poids;
+            end loop;
+
+            if v_poids_total > 0 then
+               v_note := v_total / v_poids_total;
+               v_total_points := v_total_points + v_note;
+               v_nb_cours := v_nb_cours + 1;
+            end if;
+         end;
+      end if;
+   end loop;
+
+   -- Calculer et afficher la moyenne
+   if v_nb_cours > 0 then
+      v_moyenne := v_total_points / v_nb_cours;
+      DBMS_OUTPUT.PUT_LINE('Moyenne cumulative pour l''étudiant '
+                           || p_NI
+                           || ' : '
+                           || round(
+         v_moyenne,
+         2
+      ));
+      DBMS_OUTPUT.PUT_LINE('Nombre de cours complétés : ' || v_nb_cours);
+   else
+      DBMS_OUTPUT.PUT_LINE('Aucun cours complété pour l''étudiant ' || p_NI);
+   end if;
+exception
+   when others then
+      DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
+end calculer_moyenne_cumulative;
