@@ -22,6 +22,9 @@ $(shell mkdir -p $(BIN_DIR))
 
 .PHONY: clean import run_lecture run_menu setup
 
+setup: $(BIN_DIR)/menu.out run_lecture import
+	@echo "Configuration terminée."
+
 $(BIN_DIR)/lecture.out: $(SRC_DIR)/lectureDesDonnees.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS)
 
@@ -33,9 +36,6 @@ run_lecture: $(BIN_DIR)/lecture.out
 
 run_menu: $(BIN_DIR)/menu.out
 	@./$< $(DB_USER) $(DB_PASSWORD)
-
-setup: import run_lecture
-	@echo "Configuration terminée."
 
 import:
 	@echo exit | sqlplus -S $(DB_USER)/$(DB_PASSWORD)@$(DB_CONN) @./scripts/procedures.plsql
