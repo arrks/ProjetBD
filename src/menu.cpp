@@ -21,8 +21,9 @@ void ajouterNote(OCI_Connection *conn);
 void calculerNoteFinale(OCI_Connection *conn);
 void calculerMoyenneCumulative(OCI_Connection *conn);
 
-void errorHandler(OCI_Error *err)
-{
+void errorHandler(OCI_Error *err){
+    // Traiter les codes d'erreur
+
     if (!err) {
         cerr << "Erreur système" << endl;
         return;
@@ -67,7 +68,6 @@ int main(int argc, char *argv[]){
     try{
         OCI_EnableWarnings(true);
 
-
         // Initialiser OCILIB
         if(!OCI_Initialize(errorHandler, NULL, OCI_ENV_DEFAULT))
             throw runtime_error("Erreur avec l'initialisation de l'environnement OCILIB.");
@@ -104,7 +104,6 @@ int main(int argc, char *argv[]){
             // Exécuter la commande
             switch(normaliseInput(userInput)){
             case 'H':
-                // cout << "Execution de la procedure (H) : Afficher la liste des commandes." << endl;
                 cout << "Voici la liste de commandes disponibles : " << endl
                     << "(P) - Afficher la liste des programmes, en ordre alphabetique." << endl
                     << "(C) - Afficher la liste des cours par session, en ordre alphabetique." << endl
@@ -117,36 +116,28 @@ int main(int argc, char *argv[]){
                     << "(X) - Sortir du programme." << endl;
             break;
             case 'X':
-                // cout << "Execution de la procedure (X) : Exit." << endl;
                 cout << "Terminaison du programme.\n====================" << endl << endl;
                 return 0;
             break;
             case 'P':
-                // cout << "Execution de la procedure (P) : Afficher la liste des programmes." << endl;
                 listeProgrammes(conn);
                 break;
             case 'C':
-                // cout << "Execution de la procedure (C) : Afficher la liste des cours par session." << endl;
                 listeCoursParSession(conn);
                 break;
             case 'E':
-                // cout << "Execution de la procedure (E) : Inscription ou desincription a un programme existant." << endl;
                 inscrireEtudiant(conn);
                 break;
             case 'I':
-                // cout << "Execution de la procedure (I) : Inscription ou desinscription a un cours." << endl;
                 inscrireEtudiantCours(conn);
                 break;
             case 'N':
-                // cout << "Execution de la procedure (N) : Ajouter ou supprimer une note a un evaluation." << endl;
                 ajouterNote(conn);
                 break;
             case 'F':
-                // cout << "Execution de la procedure (F) : Calculer la note finale pour un cours." << endl;
                 calculerNoteFinale(conn);
                 break;
             case 'M':
-                // cout << "Execution de la procedure (M) : Calculer la moyenne cumulative." << endl;
                 calculerMoyenneCumulative(conn);
                 break;
             default:
@@ -167,17 +158,7 @@ int main(int argc, char *argv[]){
         cerr << "Erreur : " << e.what() << endl;
     }
 
-
-
-
-
-
-
-
-    
-    
-
-
+    return 0;
 }
 
 char normaliseInput(string input){
@@ -192,10 +173,12 @@ char normaliseInput(string input){
         }
     }
 
+    // Remettre le charactère en majuscule.
     return toupper(output);
 }
 
 void AfficherDisplayBuffer(OCI_Connection *conn){
+    // Afficher le diplay buffer de OCILIB
     const char *p;
     while((p = OCI_ServerGetOutput(conn)) != NULL){
         printf("%s", p);
@@ -204,6 +187,7 @@ void AfficherDisplayBuffer(OCI_Connection *conn){
 }
 
 string prompt(){
+    // Demander pour une commande à l'utilisateur
     string userInput;
     cout << "> ";
     cin >> userInput;
@@ -213,6 +197,7 @@ string prompt(){
 }
 
 string prompt(string promptText){
+    // Demander pour une commande à l'utilisateur
     string userInput;
     cout << promptText << endl;
     cout << "> ";
@@ -372,8 +357,6 @@ void ajouterNote(OCI_Connection *conn){
         getline(cin, nomEval);
         note = prompt("Note : ");
 
-        // cout << NI << endl << sigle << endl << session << endl << nomEval << endl << note << endl;
-
         script = "BEGIN ajouter_note('" + NI + "', '" + sigle + "', '" + session + "', '" + nomEval + "', '" + note + "'); END;";
 
         if(!OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
@@ -393,8 +376,6 @@ void ajouterNote(OCI_Connection *conn){
         session = prompt("Session (format A21) : ");
         cout << "Nom de l'evaluation : \n> ";
         getline(cin, nomEval);
-
-        // cout << NI << endl << sigle << endl << session << endl << nomEval << endl << note << endl;
 
         script = "BEGIN ajouter_note('" + NI + "', '" + sigle + "', '" + session + "', '" + nomEval + "'); END;";
 
