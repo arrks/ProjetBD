@@ -46,3 +46,12 @@ core
 # Ignorer les fichiers de configuration de l'environnement
 .env
 config.mk
+
+# ignorer les fichiers artéfact de latex
+*.aux
+*.log
+*.toc
+*.gz
+*.out
+*.fdb_latexmk
+*.fls

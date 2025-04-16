@@ -1,0 +1,87 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[provide=*,french]{babel}
+\usepackage{lmodern}
+\usepackage{titling}
+\usepackage{hyperref}
+
+
+\begin{document}
+
+% page de garde
+\begin{titlepage}
+    \begin{center}
+        \vspace*{2cm}
+        {\huge Mini Socrate - Rapport de projet\par}
+        \vspace{1cm}
+        {\large \textit{Dans le cadre du cours INFO4030}\par}
+        \vspace{2cm}
+        {\large Alec Jones et Samuel Doucette\par}
+        {\large A00216262\par}
+        {\large A00216008\par}
+    \end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Résumé}
+Le programme repose sur trois fichiers principaux : lectureDesDonnees.cpp, menu.cpp et procedures.plsql. \\
+\indent Le fichier lectureDesDonnees.cpp lit les fichiers CSV et remplit la base de données.
+Le fichier menu.cpp offre une interface simple pour choisir et exécuter des requêtes.
+Les procédures dans procedures.plsql gèrent la manipulation des données.
+
+\section{Introduction}
+Pour ce projet, nous avons été tâchés de créer une base de données qui
+imite le fonctionnement de la base de données de l'Université de Moncton.
+Pour ce faire, nous avons utilisé le langage de programmation C++ et l'API OCILIB ainsi que le plsql.
+
+\section{Le Code}
+\subsection{La lecture des données - lectureDesDonnees.cpp}
+\indent Ce fichier utilise l'API C de OCILIB. Il a pour but d'initialiser la base de données en créant ses tables et en les remplissant avec les données des fichiers CSV fournis. \\
+\indent Le programme résultant demande pour le nom d'utilisateur et le mot de passe à la base de données, afin que l'utilisateur puisse se brancher à son propre
+compte. Une fois la connexion établie, le programme va effacer toutes les tables de la base, puis va les recréer à nouveau pour
+qu'elles soient toutes vides. Ceci est fait avec les requêtes dans le fichier projet.sql dans Clic. \\
+\indent Ensuite, le programme va lire les fichiers echelle.csv, evaluations.csv, programmes.csv et repertoire.csv pour remplir certaines tables.
+À noter que ce ne sont pas toutes les tables qui sont peuplées par ce programme. Après, le programme ferme sa connexion au serveur puis se termine.
+
+\subsection{Le PL/SQL - procedures.plsql}
+Ce fichier contient les procédures PL/SQL qui sont utilisées par le programme menu.cpp. Il est divisé en plusieurs sections, chacune contenant des procédures
+pour une tâche spécifique. \\
+\indent Chaque procédure renvoie aussi des codes d'erreur, qui sont utilisés par le programme menu.cpp pour afficher des messages d'erreur à l'utilisateur. \\
+\indent On est capable de compiler les procédures en exécutant le script.
+
+\subsection{L'interface - menu.cpp}
+\indent Ce fichier utilise aussi l'API C de OCILIB. Il agit comme l'interface entre l'utilisateur et la base de données, permettant
+à l'utilisateur d'exécuter diverses requêtes avec l'aide de commandes simples dans la console. \\
+\indent L'utilisateur doit en premier se brancher à la base de données en entrant son nom d'utilisateur et son mot de passe.
+Dès que la connexion est établie, l'utilisateur aura accès à l'interface dans la ligne de commandes. L'utilisateur est demandé d'inscrire
+une lettre qui correspond à diverses requêtes ou actions :
+\begin{itemize}
+    \item (P) - Afficher la liste des programmes, en ordre alphabétique.
+    \item (C) - Afficher la liste des cours par session, en ordre alphabétique.
+    \item (E) - S'inscrire comme nouvel.le étudiant.e à un programme existant ou bien se désinscrire.
+    \item (I) - S'inscrire à un cours d'une certaine session ou bien se désinscrire.
+    \item (N) - Ajouter ou supprimer une note obtenue à l'évaluation d'un cours à une session donnée.
+    \item (F) - Calculer la note finale pour un cours d'une session donnée, si toutes les notes sont entrées.
+    \item (M) - Calculer la moyenne cumulative d'une étudiante ou d'un étudiant.
+    \item (H) - Afficher la liste de commandes disponibles.
+    \item (X) - Sortir du programme.
+\end{itemize}
+\indent Dépendamment de la commande inscrite, l'utilisateur peut par la suite se voir demander de fournir de l'information supplémentaire,
+comme un NI, un ID de programme, un sigle de cours, et ainsi de suite. La base de données est mise à jour selon les commandes exécutées.
+Pour sortir du programme, l'utilisateur doit entrer la commande (X). \\
+\indent Les requêtes sont faites avec les procédures définies dans procedures.plsql. Ces procédures doivent déjà être stockées dans la base de données
+pour que le programme puisse les exécuter.
+
+\subsection{Le fichier makefile - makefile}
+Le fichier makefile est utilisé pour compiler le projet. Il contient les instructions pour compiler les fichiers .cpp et exécuter le programme.
+Il est aussi utilisé pour rendre l'exécution et le développement du projet plus facile. \\
+\indent Le makefile contient les instructions pour compiler le projet, exécuter le programme et nettoyer les fichiers temporaires.
+
+\section{Conclusion}
+Pour conclure, ce projet a été une bonne expérience d'apprentissage pour nous deux. Nous avons appris à utiliser l'API OCILIB, à écrire des procédures PL/SQL et à
+interagir avec une base de données. \\
+\indent C'était aussi une très bonne opportunité de pratiquer nos compétences qui en git et en makefile.
+\end{document}
