@@ -220,7 +220,6 @@ void traiterFichierRepertoire(OCI_Connection *conn){
         // Insérer la ligne dans la table repertoire
         OCI_Statement *insertSt = OCI_CreateStatement(conn);
         OCI_Prepare(insertSt, "INSERT INTO Repertoire(Sigle, Titre, Credits) VALUES (:Sigle, :Titre, :Credits)");
-        // OCI_BindString(insertSt, ":Programme", const_cast<char*>(programme.c_str()), 0);
         OCI_BindString(insertSt, ":Sigle", const_cast<char*>(sigle.c_str()), 0);
         OCI_BindString(insertSt, ":Titre", const_cast<char*>(titre.c_str()), 0);
         OCI_BindInt(insertSt, ":Credits", &credits);
