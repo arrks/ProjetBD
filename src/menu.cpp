@@ -19,6 +19,7 @@ void inscrireEtudiant(OCI_Connection *conn);
 void inscrireEtudiantCours(OCI_Connection *conn);
 void ajouterNote(OCI_Connection *conn);
 void calculerNoteFinale(OCI_Connection *conn);
+void calculerMoyenneCumulative(OCI_Connection *conn);
 
 void errorHandler(OCI_Error *err)
 {
@@ -145,7 +146,8 @@ int main(int argc, char *argv[]){
                 calculerNoteFinale(conn);
                 break;
             case 'M':
-                cout << "Execution de la procedure (M) : Calculer la moyenne cumulative." << endl;
+                // cout << "Execution de la procedure (M) : Calculer la moyenne cumulative." << endl;
+                calculerMoyenneCumulative(conn);
                 break;
             default:
                 cout << "Erreur: commande (" << userInput << ") n'est pas reconnue.\nPour obtenir une liste de commandes, appuyez sur (H)." << endl;
@@ -424,6 +426,24 @@ void calculerNoteFinale(OCI_Connection *conn){
     session = prompt("Session (format A21) : ");
 
     string script = "BEGIN calculer_note_finale('" + NI + "', '" + sigle + "', '" + session + "'); END;";
+
+    // Executer la procedure
+    if(OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
+        AfficherDisplayBuffer(conn);
+    }
+
+    OCI_StatementFree(executeSt);
+}
+
+void calculerMoyenneCumulative(OCI_Connection *conn){
+    OCI_Statement *executeSt = OCI_StatementCreate(conn);
+
+    // Demander le NI
+    string NI;
+    cout << "Calculer la moyenne cumulative. Veuillez fournir l'information suivant : " << endl;
+    NI = prompt("NI : ");
+
+    string script = "BEGIN calculer_moyenne_cumulative('" + NI + "'); END;";
 
     // Executer la procedure
     if(OCI_ExecuteStmt(executeSt, const_cast<char*>(script.c_str()))){
