@@ -337,11 +337,3 @@ void traiterFichierEchelle(OCI_Connection *conn){
    // Fermer le fichier
    fichier.close();
 }
-
-
-/*
-    À FAIRE:
-        S'assurer que le code fonctionne
-        Commencer à écrire le rapport (au moins ma partie)
-        Reviser l'énoncée, s'assurer que j'oublie rien.
-*/
