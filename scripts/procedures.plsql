@@ -82,13 +82,13 @@ begin
       select ID
         into v_programme
         from Programmes
-       where ID = p_programme;
+       where ID = upper(p_programme);
    exception
       when no_data_found then
          raise_application_error(
             -20006,
             'Erreur: Le programme '
-            || p_programme
+            || upper(p_programme)
             || ' n''existe pas.'
          );
    end;
@@ -98,39 +98,39 @@ begin
          NI,
          nom,
          ID
-      ) values ( p_NI,
+      ) values ( upper(p_NI),
                  p_nom,
-                 p_programme );
+                 upper(p_programme) );
       commit;
       DBMS_OUTPUT.PUT_LINE('Inscription réussie pour l''étudiant '
-                           || p_NI
+                           || upper(p_NI)
                            || ' au programme '
-                           || p_programme);
+                           || upper(p_programme));
    elsif p_action = 'd' then
       -- Vérifier si l'étudiant existe uniquement lors de la désinscription
       begin
          select NI
            into v_NI
            from Etudiants
-          where NI = p_NI;
+          where NI = upper(p_NI);
       exception
          when no_data_found then
             raise_application_error(
                -20001,
                'Erreur: L''étudiant '
-               || p_NI
+               || upper(p_NI)
                || ' n''est pas inscrit au programme '
-               || p_programme
+               || upper(p_programme)
             );
       end;
 
       delete from ETUDIANTS
-       where NI = p_NI
-         and ID = p_programme;
+       where NI = upper(p_NI)
+         and ID = upper(p_programme);
       DBMS_OUTPUT.PUT_LINE('Désinscription réussie pour l''étudiant '
-                           || p_NI
+                           || upper(p_NI)
                            || ' du programme '
-                           || p_programme);
+                           || upper(p_programme));
    else
       DBMS_OUTPUT.PUT_LINE('Action non reconnue. Utilisez ''i'' ou ''d''.');
    end if;
@@ -139,9 +139,9 @@ exception
       RAISE_APPLICATION_ERROR(
          -20005,
          'Erreur: L''étudiant '
-         || p_NI
+         || upper(p_NI)
          || ' est déjà inscrit au programme '
-         || p_programme
+         || upper(p_programme)
       );
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
@@ -172,7 +172,7 @@ begin
          raise_application_error(
             -20001,
             'Erreur: L''étudiant '
-            || p_NI
+            || upper(p_NI)
             || ' n''existe pas.'
          );
    end;
@@ -192,9 +192,9 @@ begin
          raise_application_error(
             -20007,
             'Erreur: Le cours '
-            || p_sigle
+            || upper(p_sigle)
             || ' n''existe pas pour le semestre '
-            || p_semestre
+            || upper(p_semestre)
          );
    end;
 
@@ -233,9 +233,9 @@ exception
       RAISE_APPLICATION_ERROR(
          -20004,
          'Erreur: L''étudiant '
-         || p_NI
+         || upper(p_NI)
          || ' est déjà inscrit au cours '
-         || p_sigle
+         || upper(p_sigle)
       );
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
@@ -262,13 +262,13 @@ begin
       select NI
         into v_NI
         from Etudiants
-       where NI = p_NI;
+       where NI = upper(p_NI);
    exception
       when no_data_found then
          raise_application_error(
             -20001,
             'Erreur: L''étudiant '
-            || p_NI
+            || upper(p_NI)
             || ' n''existe pas.'
          );
    end;
@@ -283,9 +283,9 @@ begin
          v_sigle,
          v_semestre
         from inscriptions
-       where NI = p_NI
-         and sigle = p_sigle
-         and semestre = p_semestre;
+       where NI = upper(p_NI)
+         and sigle = upper(p_sigle)
+         and semestre = upper(p_semestre);
    exception
       when no_data_found then
          raise_application_error(
@@ -302,7 +302,7 @@ begin
          v_sigle,
          v_nomeval
         from Evaluations
-       where sigle = p_sigle
+       where sigle = upper(p_sigle)
          and nomeval = p_nomeval;
    exception
       when no_data_found then
@@ -311,7 +311,7 @@ begin
             'Erreur: L''évaluation '
             || p_nomeval
             || ' n''existe pas pour le cours '
-            || p_sigle
+            || upper(p_sigle)
          );
    end;
 
@@ -322,25 +322,25 @@ begin
          semestre,
          Nomeval,
          points
-      ) values ( p_NI,
-                 p_sigle,
-                 p_semestre,
+      ) values ( upper(p_NI),
+                 upper(p_sigle),
+                 upper(p_semestre),
                  p_nomeval,
                  p_note );
       commit;
       DBMS_OUTPUT.PUT_LINE('Note ajoutée pour l''étudiant '
-                           || p_NI
+                           || upper(p_NI)
                            || ' au cours '
-                           || p_sigle);
+                           || upper(p_sigle));
    else
       delete from notes
-       where NI = p_NI
-         and sigle = p_sigle
-         and semestre = p_semestre;
+       where NI = upper(p_NI)
+         and sigle = upper(p_sigle)
+         and semestre = upper(p_semestre);
       DBMS_OUTPUT.PUT_LINE('Note supprimée pour l''étudiant '
-                           || p_NI
+                           || upper(p_NI)
                            || ' au cours '
-                           || p_sigle);
+                           || upper(p_sigle));
    end if;
 exception
    when no_data_found then
@@ -352,9 +352,9 @@ exception
       RAISE_APPLICATION_ERROR(
          -20003,
          'Erreur: La note existe déjà pour l''étudiant '
-         || p_NI
+         || upper(p_NI)
          || ' au cours '
-         || p_sigle
+         || upper(p_sigle)
       );
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
@@ -384,13 +384,13 @@ begin
       select NI
         into v_NI
         from Etudiants
-       where NI = p_NI;
+       where NI = upper(p_NI);
    exception
       when no_data_found then
          raise_application_error(
             -20001,
             'Erreur: L''étudiant '
-            || p_NI
+            || upper(p_NI)
             || ' n''existe pas.'
          );
    end;
@@ -403,14 +403,14 @@ begin
          v_sigle,
          v_semestre
         from CoursOfferts
-       where sigle = p_sigle
+       where sigle = upper(p_sigle)
          and semestre = p_semestre;
    exception
       when no_data_found then
          raise_application_error(
             -20007,
             'Erreur: Le cours '
-            || p_sigle
+            || upper(p_sigle)
             || ' n''existe pas pour le semestre '
             || p_semestre
          );
@@ -420,21 +420,21 @@ begin
    select count(*)
      into v_evalComplete
      from Evaluations
-    where sigle = p_sigle;
+    where sigle = upper(p_sigle);
 
    select count(*)
      into v_neval
      from notes
-    where sigle = p_sigle
-      and semestre = p_semestre
-      and NI = p_NI;
+    where sigle = upper(p_sigle)
+      and semestre = upper(p_semestre)
+      and NI = upper(p_NI);
    if v_neval != v_evalComplete then
       raise_application_error(
          -20009,
          'Erreur: Il manque des notes pour l''étudiant '
-         || p_NI
+         || upper(p_NI)
          || ' au cours '
-         || p_sigle
+         || upper(p_sigle)
       );
    end if;
 
@@ -447,8 +447,8 @@ begin
              Evaluations e
        where n.Nomeval = e.Nomeval
          and n.sigle = e.sigle
-         and n.NI = p_NI
-         and n.semestre = p_semestre
+         and n.NI = upper(p_NI)
+         and n.semestre = upper(p_semestre)
    ) loop
       v_total := v_total + ( r.points * r.poids );
       v_poids_total := v_poids_total + r.poids;
@@ -457,13 +457,13 @@ begin
    if v_poids_total > 0 then
       v_note := v_total / v_poids_total;
       DBMS_OUTPUT.PUT_LINE('La note finale pour l''étudiant '
-                           || p_NI
+                           || upper(p_NI)
                            || ' au cours '
-                           || p_sigle
+                           || upper(p_sigle)
                            || ' est: '
                            || v_note);
    else
-      DBMS_OUTPUT.PUT_LINE('Aucune note trouvée pour l''étudiant ' || p_NI);
+      DBMS_OUTPUT.PUT_LINE('Aucune note trouvée pour l''étudiant ' || upper(p_NI));
    end if;
 exception
    when others then
@@ -490,13 +490,13 @@ begin
       select NI
         into v_NI
         from Etudiants
-       where NI = p_NI;
+       where NI = upper(p_NI);
    exception
       when no_data_found then
          raise_application_error(
             -20001,
             'Erreur: L''étudiant '
-            || p_NI
+            || upper(p_NI)
             || ' n''existe pas.'
          );
    end;
@@ -506,21 +506,21 @@ begin
       select distinct sigle,
                       semestre
         from inscriptions
-       where NI = p_NI
+       where NI = upper(p_NI)
    ) loop
       -- Vérifier le nombre d'évaluations requises pour ce cours
       select count(*)
-        into v_evalComplete
+        into v_neval
         from Evaluations
        where sigle = cours.sigle;
 
       -- Vérifier le nombre d'évaluations complétées
       select count(*)
-        into v_neval
+        into v_evalcomplete
         from notes
        where sigle = cours.sigle
          and semestre = cours.semestre
-         and NI = p_NI;
+         and NI = upper(p_NI);
 
       -- Si toutes les évaluations sont complétées, calculer la note
       if v_neval = v_evalComplete then
@@ -537,7 +537,7 @@ begin
                       Evaluations e
                 where n.Nomeval = e.Nomeval
                   and n.sigle = e.sigle
-                  and n.NI = p_NI
+                  and n.NI = upper(p_NI)
                   and n.sigle = cours.sigle
                   and n.semestre = cours.semestre
             ) loop
@@ -558,7 +558,7 @@ begin
    if v_nb_cours > 0 then
       v_moyenne := v_total_points / v_nb_cours;
       DBMS_OUTPUT.PUT_LINE('Moyenne cumulative pour l''étudiant '
-                           || p_NI
+                           || upper(p_NI)
                            || ' : '
                            || round(
          v_moyenne,
@@ -566,7 +566,7 @@ begin
       ));
       DBMS_OUTPUT.PUT_LINE('Nombre de cours complétés : ' || v_nb_cours);
    else
-      DBMS_OUTPUT.PUT_LINE('Aucun cours complété pour l''étudiant ' || p_NI);
+      DBMS_OUTPUT.PUT_LINE('Aucun cours complété pour l''étudiant ' || upper(p_NI));
    end if;
 exception
    when others then
