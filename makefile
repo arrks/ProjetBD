@@ -20,25 +20,25 @@ DEPS = $(SRCS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.d)
 # Créer le répertoire bin s'il n'existe pas
 $(shell mkdir -p $(BIN_DIR))
 
-.PHONY: all clean import run_lecture run_menu setup
+.PHONY: clean import run_lecture run_menu setup
 
-lecture.out: $(SRC_DIR)/lectureDesDonnees.cpp
-	$(CXX) $(CXXFLAGS) $< -o $(BIN_DIR)/$@ $(LIBS)
+$(BIN_DIR)/lecture.out: $(SRC_DIR)/lectureDesDonnees.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS)
 
-menu.out: $(SRC_DIR)/menu.cpp
-	$(CXX) $(CXXFLAGS) $< -o $(BIN_DIR)/$@ $(LIBS)
+$(BIN_DIR)/menu.out: $(SRC_DIR)/menu.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS)
 
-run_lecture: lecture.out
-	@./$(BIN_DIR)/lecture.out $(DB_USER) $(DB_PASSWORD)
+run_lecture: $(BIN_DIR)/lecture.out
+	@./$< $(DB_USER) $(DB_PASSWORD)
 
-run_menu: menu.out
-	@./$(BIN_DIR)/menu.out $(DB_USER) $(DB_PASSWORD)
+run_menu: $(BIN_DIR)/menu.out
+	@./$< $(DB_USER) $(DB_PASSWORD)
 
 setup: import run_lecture
 	@echo "Configuration terminée."
 
 import:
-	sqlplus $(DB_USER)/$(DB_PASSWORD)@$(DB_CONN) @scripts/procedures.plsql
+	@echo exit | sqlplus -S $(DB_USER)/$(DB_PASSWORD)@$(DB_CONN) @./scripts/procedures.plsql
 
 clean:
 	rm -rf $(BIN_DIR)

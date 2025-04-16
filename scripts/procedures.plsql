@@ -41,6 +41,7 @@ begin
    end loop;
    close c_programmes;
 end liste_programmes;
+/
 
 -- Procédure 2: Afficher la liste de cours par session, en ordre des sigles
 -- Description: Cette procédure affiche la liste des cours disponibles pour une session spécifique, triée par ordre alphabétique des sigles.
@@ -63,6 +64,7 @@ begin
    end loop;
    close c_cours;
 end liste_cours_par_session;
+/
 
 -- Procédure 3: Inscription ou désinscription d'un nouvel étudiant
 -- Description: Cette procédure permet à un nouvel étudiant de s'inscrire à un programme existant ou de se désinscrire de celui-ci.
@@ -146,6 +148,7 @@ exception
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end inscrire_etudiant;
+/
 
 -- Procédure 4: Gestion des inscriptions d'un étudiant à un cours
 -- Description: Cette procédure permet d'inscrire ou de désinscrire un étudiant à un cours pour une session donnée.
@@ -240,6 +243,7 @@ exception
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end inscrire_etudiant_cours;
+/
 
 -- Procédure 5: Ajouter ou supprimer la note obtenue
 -- Description: Cette procédure permet d'ajouter ou de supprimer la note obtenue par un étudiant à une évaluation d'un cours à une session donnée.
@@ -359,6 +363,7 @@ exception
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end ajouter_note;
+/
 
 -- Procédure 6: Calculer la note finale
 -- Description: Cette procédure permet de calculer la note finale d'un étudiant pour un cours à une session donnée si toutes
@@ -469,6 +474,7 @@ exception
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end calculer_note_finale;
+/
 
 -- Procédure 7: 
 -- Description: Cette procedure permet de calculer la moyenne cumulative d’une étudiante ou d’un étudiant.
@@ -572,3 +578,4 @@ exception
    when others then
       DBMS_OUTPUT.PUT_LINE('Erreur: ' || sqlerrm);
 end calculer_moyenne_cumulative;
+/
